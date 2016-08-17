@@ -1,0 +1,15 @@
+ {
+ 	"manifest_version":2,
+ 	"name" : "Edge goo.gl URL Shortener", 
+ 	"version" : "0.0.0.1", 
+ 	"author": "Kennymatic", 
+ 	"browser_action": { 
+ 		"default_icon": {
+ 			"20" : "images/icon_20.png",
+ 			"40" : "images/icon_40.png"
+ 		}, 
+ 		"default_title": "Shorten URL", 
+ 		"default_popup":"popup.html"
+ 	}, 
+ 	"permissions": [ "tabs", "https://www.googleapis.com/" ]
+ }
