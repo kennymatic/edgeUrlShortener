@@ -6,27 +6,42 @@
 		browser.tabs.query({ currentWindow:true, active: true }, function(tabs) { 
 			
 			urlInput.value = tabs[0].url;
-
-			var xmlhttp = new XMLHttpRequest();
-			xmlhttp.onreadystatechange = function() { 
-				if (xmlhttp.readyState === 4) { 
-					if (xmlhttp.status === 200) { 
-						var response = JSON.parse(xmlhttp.responseText); 
-						urlInput.value = response.id;
-						urlInput.setSelectionRange(0, urlInput.value.length); 
-						urlInput.focus(); 
+			var dest = "https://www.googleapis.com/urlshortener/v1/url?key=AIzaSyBJv5k2xe31eZkTn-wNwTkZa4_FePIS_k8";
+			var url = tabs[0].url;
+			var data = { "longUrl": url };
+			$.ajax({
+				type:'POST', 
+				dataType: 'json', 
+        		contentType: 'application/json',
+				url: dest, 
+				data: JSON.stringify(data), 
+				success: function success(data) { 
+					urlInput.value = data.id;
+					urlInput.setSelectionRange(0, urlInput.value.length); 
+					urlInput.focus();  
+					
+				}, 
+				error:function err(x,s,e) { 
+					
+					if (x.readyState === 4 && x.status === 400) { 
+						var error = JSON.parse(x.responseText); 
+						var msgs = '';
+						error.error.errors.forEach(function(err) { 
+							msgs+= err.message;
+						}); 
+						//console.log(msgs); 
+						urlInput.value = msgs; 
 					} else { 
-						alert("Could not shorten URL, response code: " + xmlhttp.status);
+						//console.log(x.responseText + ', ' + s); 
+						urlInput.value = x.status + ', ' + s; 
 					}
 				} 
-			}; 
+			});
 
-			xmlhttp.open("POST", "https://www.googleapis.com/urlshortener/v1/url?key=AIzaSyBJv5k2xe31eZkTn-wNwTkZa4_FePIS_k8");
-			xmlhttp.setRequestHeader("Content-Type", "application/json"); 
-			xmlhttp.send(JSON.stringify({ "longUrl": tabs[0].url}));
+			
 		}); 
 	} catch (e) { 
-		alert("Unexpected error");
+		urlInput.value = e; 
 	}
 	
 })(); 
